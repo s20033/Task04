@@ -55,17 +55,17 @@ namespace Task04.Controllers
             }
             //[3.3]
         }
-        [HttpGet("{indexNumber}")]
+        [HttpGet("{indexNumber}")]// localhost:54010/api/students/s235
         public IActionResult GetStudent(string indexNumber)
         {
             using (SqlConnection con = new SqlConnection(ConnString))
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = con;
-                command.CommandText = "select * from student where indexNumber=@index";
+                command.CommandText = "select s.FirstName, s.LastName from student s where indexNumber=@index";
 
                 SqlParameter para1 = new SqlParameter();
-                para1.ParameterName = "index";
+                para1.ParameterName = "s235";
                 para1.Value = indexNumber;
 
                 command.Parameters.Add(para1);
@@ -79,9 +79,9 @@ namespace Task04.Controllers
                     {
                         FirstName = dr["FirstName"].ToString(),
                         LastName = dr["LastName"].ToString(),
-                        Studies = dr["Studies"].ToString(),
-                        BirthDate = DateTime.Parse(dr["BirthDate"].ToString()),
-                        Semester = int.Parse(dr["Semester"].ToString())
+                       // Studies = dr["Studies"].ToString(),
+                      //  BirthDate = DateTime.Parse(dr["BirthDate"].ToString()),
+                      //  Semester = int.Parse(dr["Semester"].ToString())
                     };
                     return Ok(st);
                 }
@@ -89,6 +89,7 @@ namespace Task04.Controllers
                 return Ok();
             }
         }
+        // [3.4/3.5]
 
         [HttpPost]
         public IActionResult CreateStudent([FromServices]IStudentsDb service, Student newStudent)
@@ -97,19 +98,21 @@ namespace Task04.Controllers
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = con;
-                command.CommandText = "insert into student(indexNumber, firstName, lastName) values (@par1, @par2, @par3)";
+                command.CommandText = "insert into student(IndexNumber, FirstName, LastName,BirthDate, IdEnrollment) values (@par1, @par2, @par3,@par4,@par5)";
 
-                command.Parameters.AddWithValue("par1", newStudent.IndexNumber);
-                command.Parameters.AddWithValue("par2", newStudent.FirstName);
-                command.Parameters.AddWithValue("par3", newStudent.LastName);
+                command.Parameters.AddWithValue("s789", newStudent.IndexNumber);
+                command.Parameters.AddWithValue("Snoopy", newStudent.FirstName);
+                command.Parameters.AddWithValue("Dogg", newStudent.LastName);
+                command.Parameters.AddWithValue("1980-10-09", newStudent.BirthDate);
+                command.Parameters.AddWithValue("3", newStudent.IdEnrollment);
 
                 con.Open();
                 int affectedRows = command.ExecuteNonQuery();
             }
 
-            return Ok();
+            return Ok(newStudent);
         }
-
+        //From Lecture Notes:
         [HttpGet("procedure")]
         public IActionResult GetStudents2()
         {
@@ -123,12 +126,12 @@ namespace Task04.Controllers
                 command.Parameters.AddWithValue("LastName", "Kowalski");
 
                 var dr = command.ExecuteReader();
-                //...
+               
             }
 
             return Ok();
         }
-
+        // From Lecture Notes:
         [HttpGet("procedure2")]
         public IActionResult GetStudents3()
         {
